@@ -35,7 +35,7 @@ namespace APDS
             int movetoy = moveto.y;
 
             uint sizex = DisplaySwitcher.GetInstance().GetMonitorWidth(monitor);
-            uint sizey = DisplaySwitcher.GetInstance().GetMonitorHeight(monitor); ;
+            uint sizey = DisplaySwitcher.GetInstance().GetMonitorHeight(monitor);
 
             bool res = WinApi.User_32.SetWindowPos(winToSwitch, IntPtr.Zero, movetox, movetoy, sizex, sizey, WinApi.SetWindowPosFlags.SWP_NOZORDER | WinApi.SetWindowPosFlags.SWP_SHOWWINDOW);
 
