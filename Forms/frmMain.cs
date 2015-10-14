@@ -1,4 +1,6 @@
-﻿using System;
+﻿//define console if you need the console window to appear.
+//#define CONSOLE
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -10,6 +12,7 @@ using System.Reflection;
 using System.IO;
 using Microsoft.Win32;
 using APDS;
+using System.Diagnostics;
 
 
 
@@ -21,12 +24,16 @@ namespace APDS
         SystemProcessHookForm sphfForm;
         System.Windows.Forms.NotifyIcon ntfIcon;
         ContextMenuStrip cmsNtfIcon;
+        static string logFilePath;
 
         //this gets set to true whenever we try to restore from tray.
         bool allowshow = false;
 
         public frmMain()
         {
+
+            SetupDebugFile();
+
             InitializeComponent();
 
             //Set up our display switching class
@@ -189,6 +196,19 @@ namespace APDS
             listRules.Columns[0].Width = -1;
         }
 
+        [ConditionalAttribute("CONSOLE")]
+        private void SetupConsole()
+        {
+            WinApi.User_32.AllocConsole();
+        }
+
+        [ConditionalAttribute("DEBUG")]
+        private void SetupDebugFile()
+        {
+            logFilePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\APDS\\debug.log";
+            SetupConsole();
+        }
+
         #endregion
 
         #region Context Menu
@@ -229,8 +249,30 @@ namespace APDS
             SwitchProfile p = ProfileHandler.GetInstance().FindMatch(e.wName);
             if (p != null)
             {
+                WriteDebugMessage("Found window: " + e.wName);
                 CreateDisplaySwitchThread(e, p);
             }            
+        }
+
+
+        [ConditionalAttribute("CONSOLE")]
+        public static void DebugLog(string message)
+        {
+            Console.WriteLine(message);
+        }
+
+
+        [ConditionalAttribute("DEBUG")]
+        public static void WriteDebugMessage(string message)
+        {
+            string logMessage = "[APDS " + System.DateTime.Now + "] - " + message;
+            using (StreamWriter wr =
+                new StreamWriter(logFilePath, true))
+            {
+                wr.WriteLine(logMessage);
+            }
+            DebugLog(logMessage);
+
         }
 
         void CreateDisplaySwitchThread(WinHookEventArgs e, SwitchProfile p)
@@ -240,6 +282,7 @@ namespace APDS
                 case (Interop.ShellEvents.HSHELL_WINDOWCREATED):
                 {
                     Thread switchMon;
+                    WriteDebugMessage("Window Created. SwitchType: " + p.Type.ToString());
                     switch (p.Type)
                     {
                         case (SwitchProfile.SwitchType.SWITCH_MONITOR):
@@ -273,13 +316,15 @@ namespace APDS
 
         private void DelayedSwitch(int delay, int monitor)
         {
+            WriteDebugMessage("Setting Display " + monitor + " as primary monitor in " + delay + "ms.");
             Thread.Sleep(delay);
             DisplaySwitcher.GetInstance().SetPrimaryDisplay(monitor);
         }
 
         private void MoveWindow(string window, int monitor)
         {
-            Thread.Sleep(400);
+            WriteDebugMessage("Moving window " + window + " to monitor " + monitor + "in 1 second.");
+            Thread.Sleep(1000);
             WindowSwitcher.GetInstance().SetWindowMonitor(window, monitor);
         }
 

@@ -37,6 +37,7 @@ namespace APDS
                 WinApi.DISPLAY_DEVICE device = ddevices[i];
                 WinApi.User_32.EnumDisplayDevices(null, i, ref device, 0);
                 ddevices[i] = device;
+                
             }
 
         }
@@ -81,6 +82,8 @@ namespace APDS
                     WinApi.DISPLAY_DEVICE dd = ddevices[count];
                     WinApi.User_32.EnumDisplayDevices(dd.DeviceName, 0, ref dd, 0);
                     dnames.Add(dd);
+
+                    frmMain.WriteDebugMessage("Device found: " + count + ", deviceID: " + dd.DeviceID + ", deviceName: " + dd.DeviceName + ", deviceString: " + dd.DeviceString + ", position:" + mode.dmPosition.x + ", " + mode.dmPosition.y + ", size: " + mode.dmPelsWidth + ", " + mode.dmPelsHeight);
 
                 }
                 else
