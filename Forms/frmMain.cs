@@ -246,10 +246,11 @@ namespace APDS
 
         private void ProcessWinOpen(object sender, WinHookEventArgs e)
         {
+            WriteDebugMessage("Found window: " + e.wName);
             SwitchProfile p = ProfileHandler.GetInstance().FindMatch(e.wName);
             if (p != null)
             {
-                WriteDebugMessage("Found window: " + e.wName);
+                
                 CreateDisplaySwitchThread(e, p);
             }            
         }
@@ -323,9 +324,11 @@ namespace APDS
 
         private void MoveWindow(string window, int monitor)
         {
-            WriteDebugMessage("Moving window " + window + " to monitor " + monitor + "in 1 second.");
-            Thread.Sleep(1000);
-            WindowSwitcher.GetInstance().SetWindowMonitor(window, monitor);
+            WriteDebugMessage("Moving window " + window + " to monitor " + monitor + " in 2 seconds.");
+            Thread.Sleep(2000);
+            Rectangle retRec = new Rectangle();
+            WindowSwitcher.GetInstance().SetWindowMonitor(window, monitor, ref retRec);
+            WriteDebugMessage("returned Rectangle: " + retRec.Left + ", " + retRec.Top + "  " + retRec.Right + ", " + retRec.Bottom);
         }
 
         private void RunEvents()
@@ -825,6 +828,7 @@ namespace APDS
             }
             else
             {
+               
                 lblSummary.Text = "";
             }
         }

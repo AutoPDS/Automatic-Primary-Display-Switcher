@@ -56,6 +56,9 @@ namespace APDS
                         var action = (Interop.ShellEvents)m.WParam.ToInt32();
                         OnWindowEvent(new WinHookEventArgs(action, wName));
                         break;
+                    case Interop.ShellEvents.HSHELL_WINDOWACTIVATED:
+                        wName = GetClassName(m.LParam);
+                        break;
                 }
             }
             base.WndProc(ref m);
@@ -67,6 +70,14 @@ namespace APDS
             int longi = Interop.GetWindowTextLength(hwnd) + 1;
             sb.Capacity = longi;
             Interop.GetWindowText(hwnd, sb, sb.Capacity);
+            return sb.ToString();
+        }
+
+        private string GetClassName(IntPtr hwnd)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.EnsureCapacity(1024);
+            Interop.GetClassName(hwnd, sb, sb.Capacity);
             return sb.ToString();
         }
 

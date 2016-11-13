@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Runtime.InteropServices;
+using System.Drawing;
 
 namespace APDS
 {
@@ -13,7 +14,7 @@ namespace APDS
             return WinApi.User_32.FindWindow((string)null, winTitle);
         }
 
-        public WinApi.DisplaySetting_Results SetWindowMonitor(string windowTitle, int monitor)
+        public WinApi.DisplaySetting_Results SetWindowMonitor(string windowTitle, int monitor, ref Rectangle finalPos)
         {
             int displayNum = monitor;
             IntPtr winToSwitch = GetWindowHwnd(windowTitle);
@@ -43,6 +44,18 @@ namespace APDS
             {
                 return WinApi.DisplaySetting_Results.DISP_CHANGE_FAILED;
             }
+
+            WinApi.RECT rRect;
+            Rectangle recRect = new Rectangle();
+
+            res = WinApi.User_32.GetWindowRect(winToSwitch, out rRect);
+
+            recRect.X = rRect.Left;
+            recRect.Y = rRect.Top;
+            recRect.Width = rRect.Right - rRect.Left + 1;
+            recRect.Height = rRect.Bottom - rRect.Top + 1;
+
+            finalPos = recRect;
 
             return WinApi.DisplaySetting_Results.DISP_CHANGE_SUCCESSFUL;
         }

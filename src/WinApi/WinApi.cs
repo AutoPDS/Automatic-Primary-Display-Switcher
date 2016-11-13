@@ -347,6 +347,14 @@ public class WinApi
         public string DeviceKey;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RECT
+    {
+        public int Left;        // x position of upper-left corner
+        public int Top;         // y position of upper-left corner
+        public int Right;       // x position of lower-right corner
+        public int Bottom;      // y position of lower-right corner
+    }
 
     public class User_32
     {
@@ -383,6 +391,10 @@ public class WinApi
 
         [DllImport("user32.dll")]
         public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWindInsertAfter, int X, int Y, uint cx, uint cy, SetWindowPosFlags uFlags);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
         public static IntPtr GetWindowLong(IntPtr hWnd, int nIndex)
         {

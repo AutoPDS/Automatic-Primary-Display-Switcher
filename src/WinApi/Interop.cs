@@ -30,5 +30,7 @@ namespace APDS
         public static extern int GetWindowText(IntPtr hwnd, System.Text.StringBuilder lpString, int cch);
         [DllImport("user32", EntryPoint = "GetWindowTextLengthA", CharSet = CharSet.Ansi, SetLastError = true, ExactSpelling = true)]
         public static extern int GetWindowTextLength(IntPtr hwnd);
+        [DllImport("user32", EntryPoint = "GetClassName", CharSet = CharSet.Ansi, SetLastError = true, ExactSpelling = true)]
+        public static extern int GetClassName(IntPtr hwnd, System.Text.StringBuilder lpClassName, int cch);
     }
 }
